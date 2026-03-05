@@ -4,12 +4,12 @@
 FastAPI RAG service over public Army Field Manuals using Bedrock KB (S3 Vectors) + Nova Micro. Returns strict JSON with citations; refuses when evidence is missing.
 
 ## Output schema
-{
-  "answer": "…",
-  "citations": [{"doc":"FM_5-0.pdf","location":"s3://…","snippet":"…"}],
-  "refusal": false,
-  "needs_clarification": []
-}
+  {
+    "answer": "…",
+    "citations": [{"doc":"FM_5-0.pdf","location":"s3://…","snippet":"…"}],
+    "refusal": false,
+    "needs_clarification": []
+  }
 
 ## Metrics
 - Baseline: docs/report_baseline.md
