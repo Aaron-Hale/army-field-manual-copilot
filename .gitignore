@@ -7,3 +7,7 @@ venv/
 .env.*
 .vscode/
 .idea/
+
+# Eval artifacts
+/eval/outputs/
+uvicorn.log
