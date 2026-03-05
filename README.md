@@ -1,15 +1,20 @@
 # Doctrine (Spec v0)
 
 ## What it does
-TBD (1–2 sentences)
+FastAPI RAG service over public Army Field Manuals using Bedrock KB (S3 Vectors) + Nova Micro. Returns strict JSON with citations; refuses when evidence is missing.
 
 ## Output schema
 {
-  "example": "value"
+  "answer": "…",
+  "citations": [{"doc":"FM_5-0.pdf","location":"s3://…","snippet":"…"}],
+  "refusal": false,
+  "needs_clarification": []
 }
 
 ## Metrics
-- TBD
+- Baseline: docs/report_baseline.md
+- Updated: docs/report_v2.md
+- CI: artifact docs/report_ci.md
 
 ## Guardrails / caps
 - TBD
