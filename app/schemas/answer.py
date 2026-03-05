@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, conint
 
 class AnswerRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=2000)
-    top_k: conint(ge=1, le=5) = 3  # guardrail: cap at 5
+    top_k: conint(ge=1) = 3  # server enforces cap via TOP_K_MAX
 
 
 class Citation(BaseModel):

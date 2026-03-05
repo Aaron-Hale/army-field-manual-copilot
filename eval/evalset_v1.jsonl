@@ -1,0 +1,60 @@
+{"id": "v1-001", "question": "What is the operational environment (OE) in Army doctrine?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-002", "question": "What are the operational variables (PMESII-PT)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-003", "question": "What are the mission variables (METT-TC)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-004", "question": "What are the elements of operational art?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-005", "question": "What is the operations process and what are its major activities?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-006", "question": "Define tempo in operations and why it matters.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-007", "question": "Define unified land operations.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-008", "question": "What is the purpose of planning in Army operations?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-009", "question": "What are the seven steps of the military decision-making process (MDMP)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-010", "question": "In general, what does each MDMP step produce as an output?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-011", "question": "In MDMP Step 1 (receipt of mission), what are the key tasks?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-012", "question": "In MDMP Step 2 (mission analysis), what are the key tasks and outputs?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-013", "question": "In MDMP Step 3 (COA development), what makes a COA acceptable?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-014", "question": "In MDMP Step 4 (COA analysis / war-gaming), what are the key outputs?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-015", "question": "In MDMP Step 5 (COA comparison), how are COAs compared?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-016", "question": "In MDMP Step 6 (COA approval), what does the commander decide?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-017", "question": "In MDMP Step 7, what happens during orders production, dissemination, and transition?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-018", "question": "What are commander's critical information requirements (CCIR) and why are they used?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-019", "question": "What is commander's intent and what does it typically include?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-020", "question": "What is a concept of operations (CONOPS) in planning?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-021", "question": "What are the five paragraphs of an operation order (OPORD)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-022", "question": "What is the purpose of OPORD annexes and appendices?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-023", "question": "What is a running estimate and who maintains it?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-024", "question": "What is synchronization in operations and planning?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-025", "question": "Define decisive point and explain how it supports an operational approach.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-026", "question": "What is a line of effort (LOE) and when would you use it?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-027", "question": "What is a line of operation (LOO) and how is it different from a line of effort?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-028", "question": "Define operational reach.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-029", "question": "Define culmination in operations.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-030", "question": "What is a center of gravity (COG) conceptually in operational art?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-031", "question": "How is risk addressed during planning?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-032", "question": "What is the purpose of rehearsals during operations?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-033", "question": "What is task organization and why is it used?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-034", "question": "In the operations process, what does control mean?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-035", "question": "In the operations process, what does assess mean and what are common assessment measures?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-036", "question": "How do plan, prepare, execute, and assess relate within the operations process?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-037", "question": "Why do staffs war-game during planning?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-038", "question": "What is an operational approach and how is it developed?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-039", "question": "What does it mean to frame a problem in Army design methodology (ADM)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-040", "question": "What does reframing mean in ADM?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
+{"id": "v1-041", "question": "What is the capital of France?", "expected_answerable": false}
+{"id": "v1-042", "question": "How many calories are in a Big Mac?", "expected_answerable": false}
+{"id": "v1-043", "question": "What will the weather be in Seattle tomorrow?", "expected_answerable": false}
+{"id": "v1-044", "question": "What is Apple's current stock price?", "expected_answerable": false}
+{"id": "v1-045", "question": "Who won the Super Bowl in 2014?", "expected_answerable": false}
+{"id": "v1-046", "question": "Who is Taylor Swift dating right now?", "expected_answerable": false}
+{"id": "v1-047", "question": "What is 12345 * 6789?", "expected_answerable": false}
+{"id": "v1-048", "question": "Give me a recipe for chocolate chip cookies.", "expected_answerable": false}
+{"id": "v1-049", "question": "What is the best antibiotic for strep throat?", "expected_answerable": false}
+{"id": "v1-050", "question": "How do I file for divorce in Washington State?", "expected_answerable": false}
+{"id": "v1-051", "question": "Plan me a 3-day trip to Rome.", "expected_answerable": false}
+{"id": "v1-052", "question": "Write a Python function to reverse a linked list.", "expected_answerable": false}
+{"id": "v1-053", "question": "What happened at the Battle of Hastings?", "expected_answerable": false}
+{"id": "v1-054", "question": "How do I beat the final boss in Elden Ring?", "expected_answerable": false}
+{"id": "v1-055", "question": "Should I invest in Bitcoin this month?", "expected_answerable": false}
+{"id": "v1-056", "question": "Should I quit my job this week?", "expected_answerable": false}
+{"id": "v1-057", "question": "Summarize the plot of Dune: Part Two.", "expected_answerable": false}
+{"id": "v1-058", "question": "How tall is Mount Everest?", "expected_answerable": false}
+{"id": "v1-059", "question": "What is the boiling point of water in Celsius at sea level?", "expected_answerable": false}
+{"id": "v1-060", "question": "Explain entropy in thermodynamics.", "expected_answerable": false}
