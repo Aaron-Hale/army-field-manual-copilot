@@ -31,6 +31,7 @@ jobs:
         run: |
           PYTHONPATH=. pytest -q
 
+      # AWS-backed steps only run on push to main (role is main-only)
       - name: Configure AWS credentials (OIDC)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
@@ -81,29 +82,19 @@ jobs:
 
           grep -q "JSON validity rate: \\*\\*100.0%\\*\\*" docs/report_ci.md
 
-          python - <<'PY'
-          import re, sys, pathlib
-          txt = pathlib.Path("docs/report_ci.md").read_text()
-          m = re.search(r"Citation rate \\(non-refusals\\): \\*\\*([0-9.]+)%\\*\\*", txt)
-          if not m:
-              sys.exit("Could not parse citation rate")
-          rate = float(m.group(1))
-          if rate < 95.0:
-              sys.exit(f"Citation rate too low: {rate}%")
-          print("Citation rate OK:", rate)
-          PY
+          python -c "import sys; from pathlib import Path; lines=Path('docs/report_ci.md').read_text().splitlines(); \
+line=next((l for l in lines if l.strip().startswith('- Citation rate (non-refusals):')), None); \
+sys.exit('Could not find citation rate line') if not line else None; \
+rate=float(line.split('**')[1].replace('%','')); \
+sys.exit(f'Citation rate too low: {rate}%') if rate<95.0 else None; \
+print('Citation rate OK:', rate)"
 
-          python - <<'PY'
-          import re, sys, pathlib
-          txt = pathlib.Path("docs/report_ci.md").read_text()
-          m = re.search(r"Refusal correctness: \\*\\*([0-9.]+)%\\*\\*", txt)
-          if not m:
-              sys.exit("Could not parse refusal correctness")
-          rate = float(m.group(1))
-          if rate < 90.0:
-              sys.exit(f"Refusal correctness too low: {rate}%")
-          print("Refusal correctness OK:", rate)
-          PY
+          python -c "import sys; from pathlib import Path; lines=Path('docs/report_ci.md').read_text().splitlines(); \
+line=next((l for l in lines if l.strip().startswith('- Refusal correctness:')), None); \
+sys.exit('Could not find refusal correctness line') if not line else None; \
+rate=float(line.split('**')[1].replace('%','')); \
+sys.exit(f'Refusal correctness too low: {rate}%') if rate<90.0 else None; \
+print('Refusal correctness OK:', rate)"
 
       - name: Upload CI artifacts
         if: always()
