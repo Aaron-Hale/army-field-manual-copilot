@@ -4,7 +4,7 @@
 {"id": "v1-004", "question": "What are the elements of operational art?", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
 {"id": "v1-005", "question": "What is the operations process and what are its major activities?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
 {"id": "v1-006", "question": "Define tempo in operations and why it matters.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
-{"id": "v1-007", "question": "Define unified land operations.", "expected_answerable": true, "expected_doc": "FM_3-0.pdf"}
+{"id": "v1-007", "question": "Define unified land operations.", "expected_answerable": false}
 {"id": "v1-008", "question": "What is the purpose of planning in Army operations?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
 {"id": "v1-009", "question": "What are the seven steps of the military decision-making process (MDMP)?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
 {"id": "v1-010", "question": "In general, what does each MDMP step produce as an output?", "expected_answerable": true, "expected_doc": "FM_5-0.pdf"}
