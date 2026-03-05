@@ -31,16 +31,20 @@ jobs:
         run: |
           pytest -q
 
+      # Only run AWS-backed steps on push to main (role is main-only)
       - name: Configure AWS credentials (OIDC)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Verify AWS identity
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: aws sts get-caller-identity
 
       - name: Start API server (background)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           AFMC_KB_ID: ${{ secrets.AFMC_KB_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -48,7 +52,7 @@ jobs:
           AFMC_MAX_OUTPUT_TOKENS: "400"
           AFMC_MAX_CONTEXT_TOKENS: "1800"
           AFMC_MIN_RETRIEVAL_SCORE: "0.45"
-          AFMC_RATE_LIMIT_RPM: "0"  # disable throttle in CI
+          AFMC_RATE_LIMIT_RPM: "0"
         run: |
           nohup python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 > uvicorn.log 2>&1 &
           echo $! > uvicorn.pid
@@ -66,6 +70,7 @@ jobs:
           exit 1
 
       - name: Gold eval regression gate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           AFMC_KB_ID: ${{ secrets.AFMC_KB_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -74,10 +79,8 @@ jobs:
           python eval/run_eval.py --input eval/gold_subset.jsonl --report docs/report_ci.md --sleep-seconds 0.0
           sed -n '1,200p' docs/report_ci.md
 
-          # JSON validity must be 100.0%
           grep -q "JSON validity rate: \\*\\*100.0%\\*\\*" docs/report_ci.md
 
-          # Citation rate (non-refusals) >= 95%
           python - <<'PY'
 import re, sys, pathlib
 txt = pathlib.Path("docs/report_ci.md").read_text()
@@ -88,7 +91,6 @@ if rate < 95.0: sys.exit(f"Citation rate too low: {rate}%")
 print("Citation rate OK:", rate)
 PY
 
-          # Refusal correctness >= 90%
           python - <<'PY'
 import re, sys, pathlib
 txt = pathlib.Path("docs/report_ci.md").read_text()
