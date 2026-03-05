@@ -31,7 +31,6 @@ jobs:
         run: |
           PYTHONPATH=. pytest -q
 
-      # AWS-backed steps only run on push to main (role is main-only)
       - name: Configure AWS credentials (OIDC)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
@@ -79,22 +78,7 @@ jobs:
         run: |
           python eval/run_eval.py --input eval/gold_subset.jsonl --report docs/report_ci.md --sleep-seconds 0.0
           sed -n '1,200p' docs/report_ci.md
-
-          grep -q "JSON validity rate: \\*\\*100.0%\\*\\*" docs/report_ci.md
-
-          python -c "import sys; from pathlib import Path; lines=Path('docs/report_ci.md').read_text().splitlines(); \
-line=next((l for l in lines if l.strip().startswith('- Citation rate (non-refusals):')), None); \
-sys.exit('Could not find citation rate line') if not line else None; \
-rate=float(line.split('**')[1].replace('%','')); \
-sys.exit(f'Citation rate too low: {rate}%') if rate<95.0 else None; \
-print('Citation rate OK:', rate)"
-
-          python -c "import sys; from pathlib import Path; lines=Path('docs/report_ci.md').read_text().splitlines(); \
-line=next((l for l in lines if l.strip().startswith('- Refusal correctness:')), None); \
-sys.exit('Could not find refusal correctness line') if not line else None; \
-rate=float(line.split('**')[1].replace('%','')); \
-sys.exit(f'Refusal correctness too low: {rate}%') if rate<90.0 else None; \
-print('Refusal correctness OK:', rate)"
+          python eval/ci_gate.py docs/report_ci.md
 
       - name: Upload CI artifacts
         if: always()
