@@ -11,3 +11,6 @@ venv/
 # Eval artifacts
 /eval/outputs/
 uvicorn.log
+
+# TextEdit artifacts
+*.rtf
