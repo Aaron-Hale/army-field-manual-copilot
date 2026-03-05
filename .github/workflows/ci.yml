@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -85,9 +85,11 @@ jobs:
 import re, sys, pathlib
 txt = pathlib.Path("docs/report_ci.md").read_text()
 m = re.search(r"Citation rate \\(non-refusals\\): \\*\\*([0-9.]+)%\\*\\*", txt)
-if not m: sys.exit("Could not parse citation rate")
+if not m:
+    sys.exit("Could not parse citation rate")
 rate = float(m.group(1))
-if rate < 95.0: sys.exit(f"Citation rate too low: {rate}%")
+if rate < 95.0:
+    sys.exit(f"Citation rate too low: {rate}%")
 print("Citation rate OK:", rate)
 PY
 
@@ -95,9 +97,11 @@ PY
 import re, sys, pathlib
 txt = pathlib.Path("docs/report_ci.md").read_text()
 m = re.search(r"Refusal correctness: \\*\\*([0-9.]+)%\\*\\*", txt)
-if not m: sys.exit("Could not parse refusal correctness")
+if not m:
+    sys.exit("Could not parse refusal correctness")
 rate = float(m.group(1))
-if rate < 90.0: sys.exit(f"Refusal correctness too low: {rate}%")
+if rate < 90.0:
+    sys.exit(f"Refusal correctness too low: {rate}%")
 print("Refusal correctness OK:", rate)
 PY
 
