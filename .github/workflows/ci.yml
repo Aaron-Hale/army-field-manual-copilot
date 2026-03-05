@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # for OIDC (optional)
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Unit tests
+        run: |
+          pytest -q
+
+      # ---------- Optional: Configure AWS via OIDC ----------
+      # Uncomment + set these secrets once you create the role and trust policy:
+      #   AWS_ROLE_TO_ASSUME, AWS_REGION
+      #
+      # - name: Configure AWS credentials (OIDC)
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Start API server (background)
+        env:
+          # Required for eval step; set these as repo secrets to enable eval in CI.
+          AFMC_KB_ID: ${{ secrets.AFMC_KB_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          # Cost guardrails
+          AFMC_TOP_K_MAX: "5"
+          AFMC_MAX_OUTPUT_TOKENS: "400"
+          AFMC_MAX_CONTEXT_TOKENS: "1800"
+          AFMC_MIN_RETRIEVAL_SCORE: "0.45"
+          AFMC_RATE_LIMIT_RPM: "0"  # disable throttle in CI
+        run: |
+          # Start server only if AFMC_KB_ID is present
+          if [ -z "${AFMC_KB_ID}" ]; then
+            echo "AFMC_KB_ID not set; skipping server start (eval disabled)."
+            exit 0
+          fi
+
+          nohup python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 > uvicorn.log 2>&1 &
+          echo $! > uvicorn.pid
+
+          # Wait for /health
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8000/health > /dev/null; then
+              echo "Server is up."
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "Server did not start. Logs:"
+          tail -200 uvicorn.log
+          exit 1
+
+      - name: Gold eval regression gate
+        env:
+          AFMC_KB_ID: ${{ secrets.AFMC_KB_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          # Optional: price inputs for cost reporting (set if you want)
+          EVAL_PRICE_IN_PER_1K: "0"
+          EVAL_PRICE_OUT_PER_1K: "0"
+          # Disable max questions overrides
+          EVAL_MAX_QUESTIONS: "50"
+        run: |
+          if [ -z "${AFMC_KB_ID}" ]; then
+            echo "AFMC_KB_ID not set; skipping gold eval."
+            exit 0
+          fi
+
+          python eval/run_eval.py --input eval/gold_subset.jsonl --report docs/report_ci.md --sleep-seconds 0.0
+
+          echo "---- CI report ----"
+          sed -n '1,200p' docs/report_ci.md
+
+          # Enforce thresholds (simple grep-based gate)
+          # JSON validity must be 100.0%
+          grep -q "JSON validity rate: \\*\\*100.0%\\*\\*" docs/report_ci.md
+
+          # Citation rate non-refusals >= 95% (allow small variation)
+          python - <<'PY'
+import re, sys, pathlib
+txt = pathlib.Path("docs/report_ci.md").read_text()
+m = re.search(r"Citation rate \\(non-refusals\\): \\*\\*([0-9.]+)%\\*\\*", txt)
+if not m:
+    print("Could not parse citation rate"); sys.exit(1)
+rate = float(m.group(1))
+if rate < 95.0:
+    print(f"Citation rate too low: {rate}%"); sys.exit(1)
+print("Citation rate OK:", rate)
+PY
+
+          # Refusal correctness >= 90%
+          python - <<'PY'
+import re, sys, pathlib
+txt = pathlib.Path("docs/report_ci.md").read_text()
+m = re.search(r"Refusal correctness: \\*\\*([0-9.]+)%\\*\\*", txt)
+if not m:
+    print("Could not parse refusal correctness"); sys.exit(1)
+rate = float(m.group(1))
+if rate < 90.0:
+    print(f"Refusal correctness too low: {rate}%"); sys.exit(1)
+print("Refusal correctness OK:", rate)
+PY
+
+      - name: Upload CI report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          path: |
+            docs/report_ci.md
+            uvicorn.log
