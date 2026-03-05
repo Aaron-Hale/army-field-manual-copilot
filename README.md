@@ -41,3 +41,30 @@ Terminal 2 (demo calls):
 
 See docs/architecture.md (includes a Mermaid diagram).
 
+---
+
+## Results
+
+Baseline eval (60 Qs):
+- JSON validity: 100%
+- Citation rate (non-refusals): 100%
+- Refusal correctness: 100%
+- Avg latency: ~1.9s (p95 ~2.6s)
+- Tokens in/out (60 Qs): ~59k / ~4.1k
+
+CI gate (gold subset, 10 Qs on push to main):
+- JSON validity: 100%
+- Citation rate (non-refusals): 100%
+- Refusal correctness: 100%
+- Avg latency: ~1.3s (p95 ~1.6s)
+
+See: docs/report_baseline.md, docs/report_v2.md, and CI artifact docs/report_ci.md.
+
+
+## Security and cost guardrails
+
+- GitHub Actions uses AWS OIDC (no long-lived AWS keys committed).
+- Server-side caps: TOP_K max, context truncation (MAX_CONTEXT_TOKENS), output cap (MAX_OUTPUT_TOKENS).
+- Cite-or-refuse policy: if retrieval is empty/low-confidence, the API refuses with clarifying questions instead of hallucinating.
+- Eval runner has a max-question limit to prevent surprise spend.
+
