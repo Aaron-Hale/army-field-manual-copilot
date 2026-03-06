@@ -14,7 +14,7 @@ FastAPI RAG service over public Army Field Manuals using Bedrock Knowledge Bases
 ## Metrics
 - Baseline: docs/report_baseline.md
 - Updated: docs/report_v2.md
-- CI: artifact docs/report_ci.md
+- CI: GitHub Actions uploads `docs/report_ci.md` as a build artifact
 
 ## Guardrails / cost controls
 
