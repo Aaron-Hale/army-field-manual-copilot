@@ -112,3 +112,27 @@ See `docs/setup.md` for:
 - local run instructions
 - what parts of retrieval are Bedrock-managed vs handled in this repo
 
+## Docker
+
+Build:
+
+~~~bash
+docker build -t afmc-rag .
+~~~
+
+Run:
+
+~~~bash
+docker run --rm -p 8000:8000 \
+  -e AFMC_KB_ID="$AFMC_KB_ID" \
+  -e AWS_REGION="${AWS_REGION:-us-east-1}" \
+  -e AFMC_MODEL_ID="${AFMC_MODEL_ID:-amazon.nova-micro-v1:0}" \
+  afmc-rag
+~~~
+
+Health check:
+
+~~~bash
+curl http://127.0.0.1:8000/health
+~~~
+
