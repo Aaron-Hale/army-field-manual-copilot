@@ -16,8 +16,24 @@ FastAPI RAG service over public Army Field Manuals using Bedrock Knowledge Bases
 - Updated: docs/report_v2.md
 - CI: artifact docs/report_ci.md
 
-## Guardrails / caps
-- TBD
+## Guardrails / cost controls
+
+The service is designed to be safe-by-default and keep spend predictable.
+
+- **Top-K cap:** client `top_k` is validated and capped server-side (default 3; max 5).
+- **Context cap:** retrieved text is truncated to `AFMC_MAX_CONTEXT_TOKENS` (default ~1800) before generation.
+- **Output cap:** generation is capped via `AFMC_MAX_OUTPUT_TOKENS` (default ~400).
+- **Cite-or-refuse:** if retrieval is empty or the best retrieval score is below `AFMC_MIN_RETRIEVAL_SCORE` (default ~0.45), the API refuses and returns clarifying questions (no hallucinated answers).
+- **Rate limiting:** simple per-IP request throttle via `AFMC_RATE_LIMIT_RPM` (disabled in CI).
+- **Eval safety:** eval runner has a max-questions limit to prevent accidental spend.
+- **Telemetry headers:** response headers include `x-afmc-*` fields for tokens and latency to make cost/latency visible (input/output tokens, retrieval/LLM latency, max_score, top_k).
+
+Environment variables (examples):
+- `AFMC_TOP_K_MAX=5`
+- `AFMC_MAX_CONTEXT_TOKENS=1800`
+- `AFMC_MAX_OUTPUT_TOKENS=400`
+- `AFMC_MIN_RETRIEVAL_SCORE=0.45`
+- `AFMC_RATE_LIMIT_RPM=30`
 
 ## Repo structure
 - app/ FastAPI service
