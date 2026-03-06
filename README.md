@@ -89,3 +89,26 @@ See: docs/report_baseline.md, docs/report_v2.md, and CI artifact docs/report_ci.
 - Cite-or-refuse policy: if retrieval is empty/low-confidence, the API refuses with clarifying questions instead of hallucinating.
 - Eval runner has a max-question limit to prevent surprise spend.
 
+## Why this demonstrates RAG
+
+This repo demonstrates more than a toy “LLM wrapper”:
+
+- retrieval over a real knowledge source using Amazon Bedrock Knowledge Bases
+- citation-grounded answers
+- refusal behavior when evidence is weak
+- telemetry for latency and token usage
+- tests, evals, and CI checks
+
+It is meant to show the application and engineering side of building a production-style RAG service.
+
+
+## Bedrock KB setup
+
+This project expects an existing Amazon Bedrock Knowledge Base.
+
+See `docs/setup.md` for:
+- prerequisites
+- environment variables
+- local run instructions
+- what parts of retrieval are Bedrock-managed vs handled in this repo
+
