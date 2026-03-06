@@ -87,4 +87,3 @@ jobs:
           name: ci-artifacts
           path: |
             docs/report_ci.md
-            uvicorn.log
