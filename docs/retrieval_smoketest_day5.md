@@ -1,6 +1,6 @@
 # Retrieval Smoke Test (Day 5) — AFMC
 
-KB: afmc-kb-v1 (48Q5IV9XZ1)
+KB: afmc-kb-v1 (<YOUR_KB_ID>)
 Data source: afmc-kb-v1-raw (X4KWWQFXN5)
 TOP_K tested: 3
 Embedding: Titan Text Embeddings v2 (float, 512)

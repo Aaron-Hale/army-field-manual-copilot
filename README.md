@@ -32,7 +32,7 @@ FastAPI RAG service over public Army Field Manuals using Bedrock KB (S3 Vectors)
 Terminal 1 (server + logs):
 
     cd ~/projects/army-field-manual-copilot
-    export AFMC_KB_ID=48Q5IV9XZ1
+    export AFMC_KB_ID=<YOUR_KB_ID>
     export AWS_REGION=us-east-1
     export AFMC_MODEL_ID=amazon.nova-micro-v1:0
     ./scripts/run_local.sh

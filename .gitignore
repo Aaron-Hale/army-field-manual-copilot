@@ -14,3 +14,6 @@ uvicorn.log
 
 # TextEdit artifacts
 *.rtf
+
+# Local AWS resource notes (keep private)
+docs/aws_resources.md
