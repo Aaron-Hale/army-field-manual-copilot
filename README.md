@@ -1,7 +1,7 @@
-# Doctrine (Spec v0)
+# Army Field Manual Copilot (AFMC)
 
 ## What it does
-FastAPI RAG service over public Army Field Manuals using Bedrock KB (S3 Vectors) + Nova Micro. Returns strict JSON with citations; refuses when evidence is missing.
+FastAPI RAG service over public Army Field Manuals using Bedrock Knowledge Bases (S3 Vectors) + Nova Micro, returning strict JSON with citations; implements cite-or-refuse behavior, token/latency telemetry, and CI eval gates to prevent regressions.
 
 ## Output schema
   {
