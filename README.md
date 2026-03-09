@@ -1,138 +1,231 @@
 # Army Field Manual Copilot (AFMC)
 
-## What it does
-FastAPI RAG service over public Army Field Manuals using Bedrock Knowledge Bases (S3 Vectors) + Nova Micro, returning strict JSON with citations; implements cite-or-refuse behavior, token/latency telemetry, and CI eval gates to prevent regressions.
+Army Field Manual Copilot (AFMC) is a FastAPI-based retrieval-augmented generation (RAG) service for answering questions over public U.S. Army Field Manuals. The system uses Amazon Bedrock Knowledge Bases for retrieval and Amazon Nova Micro for answer generation, and returns structured JSON responses with citations.
 
-## Output schema
-  {
-    "answer": "…",
-    "citations": [{"doc":"FM_5-0.pdf","location":"s3://…","snippet":"…"}],
-    "refusal": false,
-    "needs_clarification": []
-  }
+The repository is intended to demonstrate a production-oriented RAG application with:
 
-## Metrics
-- Baseline: docs/report_baseline.md
-- Updated: docs/report_v2.md
-- CI: GitHub Actions uploads `docs/report_ci.md` as a build artifact
-
-## Guardrails / cost controls
-
-The service is designed to be safe-by-default and keep spend predictable.
-
-- **Top-K cap:** client `top_k` is validated and capped server-side (default 3; max 5).
-- **Context cap:** retrieved text is truncated to `AFMC_MAX_CONTEXT_TOKENS` (default ~1800) before generation.
-- **Output cap:** generation is capped via `AFMC_MAX_OUTPUT_TOKENS` (default ~400).
-- **Cite-or-refuse:** if retrieval is empty or the best retrieval score is below `AFMC_MIN_RETRIEVAL_SCORE` (default ~0.45), the API refuses and returns clarifying questions (no hallucinated answers).
-- **Rate limiting:** simple per-IP request throttle via `AFMC_RATE_LIMIT_RPM` (disabled in CI).
-- **Eval safety:** eval runner has a max-questions limit to prevent accidental spend.
-- **Telemetry headers:** response headers include `x-afmc-*` fields for tokens and latency to make cost/latency visible (input/output tokens, retrieval/LLM latency, max_score, top_k).
-
-Environment variables (examples):
-- `AFMC_TOP_K_MAX=5`
-- `AFMC_MAX_CONTEXT_TOKENS=1800`
-- `AFMC_MAX_OUTPUT_TOKENS=400`
-- `AFMC_MIN_RETRIEVAL_SCORE=0.45`
-- `AFMC_RATE_LIMIT_RPM=30`
-
-## Repo structure
-- app/ FastAPI service
-- eval/ evaluation scripts + metrics
-- scripts/ one-off utilities
-- docs/ notes / diagrams
+- grounded answers with citations
+- refusal behavior when supporting evidence is insufficient
+- token and latency telemetry
+- evaluation reports and CI checks
+- Docker-based local execution
 
 ---
 
-## Demo (30 seconds)
+## Overview
 
-Terminal 1 (server + logs):
+AFMC retrieves relevant evidence from a Bedrock Knowledge Base backed by Army Field Manual content and generates a structured response with citations. The service follows a cite-or-refuse policy: if retrieval is empty or confidence is too low, the system returns a refusal with clarifying questions instead of fabricating an answer.
 
-    cd ~/projects/army-field-manual-copilot
-    export AFMC_KB_ID=<YOUR_KB_ID>
-    export AWS_REGION=us-east-1
-    export AFMC_MODEL_ID=amazon.nova-micro-v1:0
-    ./scripts/run_local.sh
+Primary characteristics:
 
-Terminal 2 (demo calls):
+- FastAPI service with JSON-first API design
+- Amazon Bedrock Knowledge Bases for retrieval
+- Amazon Nova Micro for response generation
+- citation-grounded answers
+- configurable cost and latency guardrails
+- evaluation reports and CI gating
 
-    cd ~/projects/army-field-manual-copilot
-    ./scripts/demo.sh
+---
+
+## API Response Shape
+
+The service returns strict JSON with the following shape:
+
+~~~json
+{
+  "answer": "…",
+  "citations": [
+    {
+      "doc": "FM_5-0.pdf",
+      "location": "s3://…",
+      "snippet": "…"
+    }
+  ],
+  "refusal": false,
+  "needs_clarification": []
+}
+~~~
+
+Key response behaviors:
+
+- `answer`: generated answer when evidence is sufficient
+- `citations`: evidence used to support the answer
+- `refusal`: boolean indicating whether the system declined to answer
+- `needs_clarification`: follow-up questions returned when evidence is weak or missing
+
+---
 
 ## Architecture
 
-See docs/architecture.md (includes a Mermaid diagram).
+At a high level, the service performs the following steps:
+
+1. accept a user question through a FastAPI endpoint
+2. retrieve relevant passages from Amazon Bedrock Knowledge Bases
+3. apply confidence checks and cite-or-refuse logic
+4. call the language model with bounded context and output limits
+5. return a structured JSON response with citations and telemetry headers
+
+Architecture notes and diagrams are available in:
+
+- `docs/architecture.md`
 
 ---
 
-## Results
+## Repository Structure
 
-Baseline eval (60 Qs):
-- JSON validity: 100%
-- Citation rate (non-refusals): 100%
-- Refusal correctness: 100%
-- Avg latency: ~1.9s (p95 ~2.6s)
-- Tokens in/out (60 Qs): ~59k / ~4.1k
+~~~text
+app/        FastAPI service code
+docs/       setup notes, architecture, reports, and diagrams
+eval/       evaluation scripts and metrics
+scripts/    utility scripts for setup and testing
+tests/      automated tests
+~~~
 
-CI gate (gold subset, 10 Qs on push to main):
-- JSON validity: 100%
-- Citation rate (non-refusals): 100%
-- Refusal correctness: 100%
-- Avg latency: ~1.3s (p95 ~1.6s)
+---
 
-See: docs/report_baseline.md, docs/report_v2.md, and CI artifact docs/report_ci.md.
+## Core Design Principles
 
+### Grounded responses
+Answers should be supported by retrieved evidence and returned with citations.
 
-## Security and cost guardrails
+### Refusal over fabrication
+If supporting evidence is not available or confidence is below threshold, the service should refuse to answer and request clarification.
 
-- GitHub Actions uses AWS OIDC (no long-lived AWS keys committed).
-- Server-side caps: TOP_K max, context truncation (MAX_CONTEXT_TOKENS), output cap (MAX_OUTPUT_TOKENS).
-- Cite-or-refuse policy: if retrieval is empty/low-confidence, the API refuses with clarifying questions instead of hallucinating.
-- Eval runner has a max-question limit to prevent surprise spend.
+### Structured API behavior
+The service is designed around predictable JSON responses rather than free-form chat output.
 
-## Why this demonstrates RAG
+### Operational visibility
+The service exposes cost and latency-related telemetry so behavior can be inspected during testing and iteration.
 
-This repo demonstrates more than a toy “LLM wrapper”:
+---
 
-- retrieval over a real knowledge source using Amazon Bedrock Knowledge Bases
-- citation-grounded answers
-- refusal behavior when evidence is weak
-- telemetry for latency and token usage
-- tests, evals, and CI checks
+## Running Locally
 
-It is meant to show the application and engineering side of building a production-style RAG service.
+### 1. Create and activate a virtual environment
 
+~~~bash
+python3 -m venv .venv
+source .venv/bin/activate
+~~~
 
-## Bedrock KB setup
+### 2. Install dependencies
 
-This project expects an existing Amazon Bedrock Knowledge Base.
+~~~bash
+pip install -r requirements.txt
+~~~
 
-See `docs/setup.md` for:
-- prerequisites
-- environment variables
-- local run instructions
-- what parts of retrieval are Bedrock-managed vs handled in this repo
+### 3. Configure environment variables
+
+Set the environment variables required by the service, including:
+
+- AWS credentials / profile
+- AWS region
+- Bedrock Knowledge Base identifier
+- model identifier if configurable in your setup
+
+If the repository includes an example environment file, copy and adapt it before running locally.
+
+### 4. Start the API
+
+~~~bash
+uvicorn app.main:app --reload --port 8000
+~~~
+
+### 5. Test the endpoint
+
+~~~bash
+curl -X POST http://127.0.0.1:8000/answer \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What does FM 5-0 say about commander’s intent?"}'
+~~~
+
+---
 
 ## Docker
 
-Build:
+If Docker support is configured in the repository, the application can also be built and run in a containerized workflow.
+
+Typical flow:
 
 ~~~bash
 docker build -t afmc-rag .
-~~~
-
-Run:
-
-~~~bash
 docker run --rm -p 8000:8000 \
-  -e AFMC_KB_ID="$AFMC_KB_ID" \
-  -e AWS_REGION="${AWS_REGION:-us-east-1}" \
-  -e AFMC_MODEL_ID="${AFMC_MODEL_ID:-amazon.nova-micro-v1:0}" \
+  -e AFMC_KB_ID="YOUR_KB_ID" \
+  -e AWS_REGION="us-east-1" \
+  -e AFMC_MODEL_ID="amazon.nova-micro-v1:0" \
   afmc-rag
 ~~~
 
-Health check:
+Adjust environment variables to match your local AWS and Bedrock configuration.
 
-~~~bash
-curl http://127.0.0.1:8000/health
-~~~
+---
 
+## Evaluation
+
+The repository includes evaluation artifacts and reports intended to measure retrieval quality, answer grounding, and refusal behavior.
+
+Relevant files may include:
+
+- `docs/report_ci.md`
+- `docs/retrieval_smoketest_day5.md`
+- `eval/`
+- CI workflows under `.github/workflows/`
+
+The project is structured so that quality checks can run in CI and produce artifacts for review.
+
+---
+
+## Example Use Cases
+
+This project is intended for scenarios such as:
+
+- asking doctrine questions against Army Field Manuals
+- testing retrieval quality over long-form technical documents
+- evaluating cite-or-refuse behavior in a RAG service
+- demonstrating production-minded API design for LLM applications
+
+---
+
+## Development Focus
+
+This repository emphasizes:
+
+- retrieval quality before generation quality
+- deterministic and inspectable API behavior
+- modular service organization
+- reproducible testing and reporting
+- practical tradeoffs between latency, cost, and answer quality
+
+---
+
+## Recommended Entry Points
+
+For a quick review, start with:
+
+1. `app/main.py`
+2. `app/routes/`
+3. `app/services/`
+4. `docs/architecture.md`
+5. `docs/report_ci.md`
+6. `eval/`
+
+---
+
+## Current Status
+
+The repository currently represents a RAG API over Army Field Manual content with:
+
+- FastAPI-based serving
+- Bedrock retrieval integration
+- structured JSON responses with citations
+- refusal and clarification behavior
+- local and containerized execution paths
+- evaluation and CI support
+
+Future extensions could include:
+
+- broader document coverage
+- improved retrieval quality
+- richer monitoring and observability
+- expanded evaluation sets
+- tighter cost and latency controls
